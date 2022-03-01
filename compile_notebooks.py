@@ -14,16 +14,18 @@ def clean_nb(nb_data):
 
 def prepend_setup_code(notebook_path, code_path):
     with open(notebook_path, 'r') as f:
-        data = json.load(f)
+        data = clean_nb(json.load(f))
 
-        code = {'cell_type': 'code', 'metadata': {}, 'outputs': [], 'execution_count': None}
-        code['source'] = [x+'\n' for x in open(code_path, 'r').read().split('\n')]
-        data['cells'].insert(0, code)
+    with open(notebook_path, 'w+') as f:
+        json.dump(data, f)
 
+    code = {'cell_type': 'code', 'metadata': {}, 'outputs': [], 'execution_count': None}
+    code['source'] = [x+'\n' for x in open(code_path, 'r').read().split('\n')]
+    data['cells'].insert(0, code)
 
     os.makedirs('student_lessons', exist_ok=True)
     with open(f'student_lessons/{os.path.split(notebook_path)[-1]}', 'w+') as f:
-        json.dump(clean_nb(data), f)
+        json.dump(data, f)
 
 
 SETUP_PATH = 'setup_cell'
